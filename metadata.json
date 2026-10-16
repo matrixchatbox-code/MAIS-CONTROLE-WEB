@@ -1,0 +1,8 @@
+{
+  "name": "Remix TryControle App MAIS CONTROLE | Aplicativo para Trabalhador | Para Android e IOS",
+  "description": "TryControle App MAIS CONTROLE | Aplicativo para Trabalhador | Para Android e IOS",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

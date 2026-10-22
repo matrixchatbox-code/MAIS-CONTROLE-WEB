@@ -22,8 +22,14 @@ import {
   CreditCard,
   X,
   Camera,
-  Download
+  Download,
+  Zap,
+  Percent,
+  Link2,
 } from 'lucide-react';
+import { PaymentLinkModal } from '../components/modals/PaymentLinkModal';
+import { DisparoEmMassaModal } from '../components/modals/DisparoEmMassaModal';
+import { CalculadoraMultiFuncaoModal } from '../components/modals/CalculadoraMultiFuncaoModal';
 
 interface TryVentasViewProps {
   movements: CashMovement[];
@@ -58,6 +64,10 @@ export const TryVentasView: React.FC<TryVentasViewProps> = ({
   const [isNewIncomeModalOpen, setIsNewIncomeModalOpen] = useState(false);
   const [isNewSaleModalOpen, setIsNewSaleModalOpen] = useState(false);
   const [selectedContractForReceipt, setSelectedContractForReceipt] = useState<SaleContract | null>(null);
+  const [isPaymentLinkOpen, setIsPaymentLinkOpen] = useState(false);
+  const [isDisparoEmMassaOpen, setIsDisparoEmMassaOpen] = useState(false);
+  const [isMultiCalcOpen, setIsMultiCalcOpen] = useState(false);
+  const [targetContractForLink, setTargetContractForLink] = useState<SaleContract | null>(null);
 
   // New Movement Form state
   const [movType, setMovType] = useState<'Ingreso' | 'Gasto'>('Ingreso');
@@ -200,13 +210,45 @@ export const TryVentasView: React.FC<TryVentasViewProps> = ({
           <span>{isPt ? 'Resumo por Período' : 'Resumen por Período'}</span>
         </button>
 
-        <button
-          onClick={() => setIsNewSaleModalOpen(true)}
-          className="w-full sm:w-auto sm:ml-auto flex items-center justify-center space-x-1.5 px-4 py-2 rounded-lg font-bold text-xs bg-[#76b82a] hover:bg-[#6aa822] text-white transition shadow-xs"
-        >
-          <Plus className="w-4 h-4" />
-          <span>{isPt ? 'Emitir Nova Venda' : 'Crear Venta'}</span>
-        </button>
+        <div className="w-full sm:w-auto sm:ml-auto flex flex-wrap items-center gap-2">
+          <button
+            onClick={() => setIsDisparoEmMassaOpen(true)}
+            className="flex items-center justify-center space-x-1.5 px-3 py-2 rounded-lg font-bold text-xs bg-[#25D366] hover:bg-[#20ba59] text-white transition shadow-xs cursor-pointer"
+            title="Disparo em massa de cobrança com link de pagamento"
+          >
+            <Zap className="w-3.5 h-3.5 fill-current" />
+            <span>Disparo em Massa</span>
+          </button>
+
+          <button
+            onClick={() => {
+              setTargetContractForLink(contracts[0] || null);
+              setIsPaymentLinkOpen(true);
+            }}
+            className="flex items-center justify-center space-x-1.5 px-3 py-2 rounded-lg font-bold text-xs bg-purple-900 hover:bg-purple-800 text-white border border-[#8cc63f]/50 transition shadow-xs cursor-pointer"
+            title="Gerar Link de Pagamento com chave PIX e QR Code"
+          >
+            <Link2 className="w-3.5 h-3.5 text-[#8cc63f]" />
+            <span>Link de Pagamento</span>
+          </button>
+
+          <button
+            onClick={() => setIsMultiCalcOpen(true)}
+            className="flex items-center justify-center space-x-1.5 px-3 py-2 rounded-lg font-bold text-xs bg-purple-900 hover:bg-purple-800 text-white border border-purple-400/50 transition shadow-xs cursor-pointer"
+            title="Calculadora Multi-Função % Mais Controle"
+          >
+            <Percent className="w-3.5 h-3.5 text-[#8cc63f]" />
+            <span>Calculadora %</span>
+          </button>
+
+          <button
+            onClick={() => setIsNewSaleModalOpen(true)}
+            className="flex items-center justify-center space-x-1.5 px-4 py-2 rounded-lg font-bold text-xs bg-[#76b82a] hover:bg-[#6aa822] text-white transition shadow-xs cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+            <span>{isPt ? 'Emitir Nova Venda' : 'Crear Venta'}</span>
+          </button>
+        </div>
       </div>
 
       {isResumoPeriodo ? (
@@ -817,6 +859,28 @@ export const TryVentasView: React.FC<TryVentasViewProps> = ({
           </div>
         </div>
       )}
+
+      {/* Modais das Novidades Solicitadas pelo Cliente */}
+      <PaymentLinkModal
+        isOpen={isPaymentLinkOpen}
+        onClose={() => setIsPaymentLinkOpen(false)}
+        clientName={targetContractForLink?.clientName || 'Anielo Gomes Corvino'}
+        clientPhone={targetContractForLink?.clientPhone || '+55 11 98451-2290'}
+        contractId={targetContractForLink?.saleId || '1003161'}
+        defaultAmount={targetContractForLink?.installmentValue || 120}
+      />
+
+      <DisparoEmMassaModal
+        isOpen={isDisparoEmMassaOpen}
+        onClose={() => setIsDisparoEmMassaOpen(false)}
+        totalClientsCount={contracts.length || 48}
+      />
+
+      <CalculadoraMultiFuncaoModal
+        isOpen={isMultiCalcOpen}
+        onClose={() => setIsMultiCalcOpen(false)}
+        initialTab="juros"
+      />
     </div>
   );
 };

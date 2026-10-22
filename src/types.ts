@@ -109,6 +109,7 @@ export interface SaleContract {
   clientId: string;
   clientName: string;
   clientAlias: string;
+  clientPhone?: string;
   unitId: string;
   unitName: string;
   saleDate: string;

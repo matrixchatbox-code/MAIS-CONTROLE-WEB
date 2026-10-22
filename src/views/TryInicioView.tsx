@@ -48,7 +48,8 @@ import {
   Search,
   BookOpen,
   Send,
-  Eye
+  Eye,
+  Link2
 } from 'lucide-react';
 import {
   DesempenhoFuncionarioSection,
@@ -57,6 +58,9 @@ import {
 } from '../components/DesempenhoFuncionarioSection';
 import { CobrancaAtivaWhatsAppSection } from '../components/CobrancaAtivaWhatsAppSection';
 import { DossieCompletoModal } from '../components/modals/DossieCompletoModal';
+import { PaymentLinkModal } from '../components/modals/PaymentLinkModal';
+import { DisparoEmMassaModal } from '../components/modals/DisparoEmMassaModal';
+import { CalculadoraMultiFuncaoModal } from '../components/modals/CalculadoraMultiFuncaoModal';
 
 interface TryInicioViewProps {
   units: UnitSummaryItem[];
@@ -112,6 +116,11 @@ export const TryInicioView: React.FC<TryInicioViewProps> = ({
   // Table Filter & Search State
   const [filterActive, setFilterActive] = useState<'todos' | 'abertas' | 'fechadas'>('todos');
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Modais de Novidades Solicitadas pelo Cliente (WhatsApp)
+  const [isDisparoEmMassaOpen, setIsDisparoEmMassaOpen] = useState(false);
+  const [isPaymentLinkOpen, setIsPaymentLinkOpen] = useState(false);
+  const [isMultiCalcOpen, setIsMultiCalcOpen] = useState(false);
 
   // Interactive Calculator State (Resultado Real) - Default matching system benchmark
   const [inputRecaudos, setInputRecaudos] = useState<number>(86200);
@@ -353,6 +362,34 @@ export const TryInicioView: React.FC<TryInicioViewProps> = ({
               </div>
             </div>
 
+            {/* Novidades Solicitadas pelo Cliente: Disparo em Massa, Link de Pagamento e Calculadora % */}
+            <button
+              onClick={() => setIsDisparoEmMassaOpen(true)}
+              className="px-3.5 py-2 rounded-xl bg-[#25D366] hover:bg-[#20ba59] text-white font-black text-xs flex items-center space-x-1.5 transition cursor-pointer shadow-md hover:scale-[1.02] active:scale-[0.98]"
+              title="Disparo em massa de cobrança via WhatsApp oficial com link de pagamento"
+            >
+              <Zap className="w-3.5 h-3.5 fill-current text-white" />
+              <span>Disparo em Massa</span>
+            </button>
+
+            <button
+              onClick={() => setIsPaymentLinkOpen(true)}
+              className="px-3.5 py-2 rounded-xl bg-purple-900/90 hover:bg-purple-800 border border-[#8cc63f]/60 text-white font-bold text-xs flex items-center space-x-1.5 transition cursor-pointer shadow-xs"
+              title="Gerar e compartilhar link de pagamento com chave PIX e QR Code"
+            >
+              <Link2 className="w-3.5 h-3.5 text-[#8cc63f]" />
+              <span>Link de Pagamento</span>
+            </button>
+
+            <button
+              onClick={() => setIsMultiCalcOpen(true)}
+              className="px-3.5 py-2 rounded-xl bg-purple-900/90 hover:bg-purple-800 border border-purple-400/50 text-white font-bold text-xs flex items-center space-x-1.5 transition cursor-pointer shadow-xs"
+              title="Calculadora Multi-Função % Mais Controle (Juros, Quitação, Multas, Amortização)"
+            >
+              <Percent className="w-3.5 h-3.5 text-[#8cc63f]" />
+              <span>Calculadora %</span>
+            </button>
+
             <button
               onClick={() => setIsFormulaExplainerOpen(true)}
               className="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold text-xs flex items-center space-x-2 transition cursor-pointer backdrop-blur-xs"
@@ -387,6 +424,101 @@ export const TryInicioView: React.FC<TryInicioViewProps> = ({
             <span>{periodActionToast}</span>
           </div>
         )}
+
+        {/* =========================================================================
+            NOVIDADE SOLICITADA PELO CLIENTE (PRINT WHATSAPP):
+            CÁLCULO AUTOMÁTICO DO RESUMO
+            Coleção / Recaudo ($) - Vendas Totais ($) - Gastos Totais ($) = Resultado ($)
+            ========================================================================= */}
+        <div className="mt-4 p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-purple-950/90 via-black/80 to-purple-950/90 border-2 border-[#8cc63f]/60 shadow-xl backdrop-blur-md">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 pb-3 border-b border-purple-800/60">
+            <div className="flex items-center space-x-2.5">
+              <span className="w-8 h-8 rounded-xl bg-[#8cc63f] text-slate-950 flex items-center justify-center font-black shadow-xs">
+                <Calculator className="w-4 h-4" />
+              </span>
+              <div>
+                <div className="flex items-center space-x-2">
+                  <h3 className="font-black text-sm text-white tracking-tight">
+                    Cálculo Automático do Resumo Diário
+                  </h3>
+                  <span className="px-2 py-0.5 rounded-full text-[9px] font-black bg-[#8cc63f] text-slate-950 uppercase tracking-wider">
+                    Fórmula Ativa
+                  </span>
+                </div>
+                <p className="text-[11px] text-purple-200">
+                  Fórmula oficial: <span className="font-mono text-[#8cc63f] font-bold">Coleção (Recaudo $) — Vendas Totais ($) — Gastos / Despesas ($) = Resultado Líquido</span>
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-2 text-xs">
+              <button
+                onClick={() => setIsMultiCalcOpen(true)}
+                className="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold text-xs flex items-center space-x-1 transition cursor-pointer"
+              >
+                <Percent className="w-3 h-3 text-[#8cc63f]" />
+                <span>Simular / Recalcular</span>
+              </button>
+              <button
+                onClick={() => setIsDisparoEmMassaOpen(true)}
+                className="px-3 py-1.5 rounded-xl bg-[#25D366] hover:bg-[#20ba59] text-white font-bold text-xs flex items-center space-x-1 transition cursor-pointer"
+              >
+                <Zap className="w-3 h-3 fill-current" />
+                <span>Disparo Rápido</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Grid dos 4 Termos Matemáticos da Fórmula */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 pt-3">
+            {/* Termo 1: Coleção / Recaudo */}
+            <div className="bg-purple-900/40 rounded-xl p-2.5 border border-purple-700/50 flex flex-col justify-between">
+              <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1">
+                <span>(+) 1. Coleção / Recaudo</span>
+              </span>
+              <div className="text-lg sm:text-xl font-black font-mono text-emerald-400 mt-1">
+                R$ {formatCurrency(inputRecaudos)}
+              </div>
+              <span className="text-[9px] text-purple-300">Entrada total de pagamentos em rota</span>
+            </div>
+
+            {/* Termo 2: Vendas Totais */}
+            <div className="bg-purple-900/40 rounded-xl p-2.5 border border-purple-700/50 flex flex-col justify-between">
+              <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1">
+                <span>(-) 2. Vendas Totais</span>
+              </span>
+              <div className="text-lg sm:text-xl font-black font-mono text-amber-400 mt-1">
+                R$ {formatCurrency(inputVendas)}
+              </div>
+              <span className="text-[9px] text-purple-300">Novos empréstimos concedidos</span>
+            </div>
+
+            {/* Termo 3: Gastos / Despesas */}
+            <div className="bg-purple-900/40 rounded-xl p-2.5 border border-purple-700/50 flex flex-col justify-between">
+              <span className="text-[10px] font-bold text-rose-400 uppercase tracking-wider flex items-center gap-1">
+                <span>(-) 3. Gastos / Despesas</span>
+              </span>
+              <div className="text-lg sm:text-xl font-black font-mono text-rose-400 mt-1">
+                R$ {formatCurrency(inputGastos)}
+              </div>
+              <span className="text-[9px] text-purple-300">Custos operacionais e opex de rota</span>
+            </div>
+
+            {/* Termo 4: Resultado Real do Caixa */}
+            <div className="bg-gradient-to-br from-[#8cc63f]/25 to-emerald-950/40 rounded-xl p-2.5 border-2 border-[#8cc63f] flex flex-col justify-between">
+              <span className="text-[10px] font-black text-[#8cc63f] uppercase tracking-wider flex items-center justify-between">
+                <span>(=) 4. Resultado Líquido</span>
+                <span className="text-[9px] font-mono text-slate-200">Margem: {margemLiquida}%</span>
+              </span>
+              <div className="text-lg sm:text-xl font-black font-mono text-white mt-1">
+                {resultadoReal >= 0 ? '+' : ''}R$ {formatCurrency(resultadoReal)}
+              </div>
+              <span className="text-[9px] text-emerald-200 font-bold">
+                {resultadoReal >= 0 ? '✓ Superávit Livre de Caixa' : '⚠️ Consumo de Capital'}
+              </span>
+            </div>
+          </div>
+        </div>
 
         {/* Setores e Suas Funções Reais na Empresa */}
         <div className="mt-4 pt-4 border-t border-purple-800/60 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 text-[11px]">
@@ -1697,6 +1829,37 @@ export const TryInicioView: React.FC<TryInicioViewProps> = ({
           }}
         />
       )}
+
+      {/* =========================================================================
+          MODAIS DAS NOVIDADES SOLICITADAS PELO CLIENTE (WHATSAPP)
+          ========================================================================= */}
+      {/* 1. Modal de Disparo em Massa via WhatsApp */}
+      <DisparoEmMassaModal
+        isOpen={isDisparoEmMassaOpen}
+        onClose={() => setIsDisparoEmMassaOpen(false)}
+        totalClientsCount={contracts.length || 48}
+      />
+
+      {/* 2. Modal de Gerar Link de Pagamento Oficial PIX / Cartão */}
+      <PaymentLinkModal
+        isOpen={isPaymentLinkOpen}
+        onClose={() => setIsPaymentLinkOpen(false)}
+        clientName="Anielo Gomes Corvino"
+        contractId="1003161"
+        defaultAmount={120}
+      />
+
+      {/* 3. Modal de Calculadora Multi-Funções % Mais Controle */}
+      <CalculadoraMultiFuncaoModal
+        isOpen={isMultiCalcOpen}
+        onClose={() => setIsMultiCalcOpen(false)}
+        initialTab="juros"
+        onApplyCalculatedValues={(vals) => {
+          if (vals.valorBase) {
+            setInputVendas(vals.valorBase);
+          }
+        }}
+      />
     </div>
   );
 };

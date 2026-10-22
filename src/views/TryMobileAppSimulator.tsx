@@ -49,7 +49,18 @@ import {
   ChevronDown,
   Copy,
   ExternalLink,
+  Zap,
+  Percent,
+  Link2,
+  Trash2,
+  Coins,
+  Banknote,
+  ShieldAlert,
 } from 'lucide-react';
+import { PaymentLinkModal } from '../components/modals/PaymentLinkModal';
+import { DisparoEmMassaModal } from '../components/modals/DisparoEmMassaModal';
+import { CalculadoraMultiFuncaoModal } from '../components/modals/CalculadoraMultiFuncaoModal';
+import { ApagarCaixaModal } from '../components/modals/ApagarCaixaModal';
 
 interface TryMobileAppSimulatorProps {
   clients: ClientProfile[];
@@ -128,6 +139,61 @@ export const TryMobileAppSimulator: React.FC<TryMobileAppSimulatorProps> = ({
   // Filtros de Cobrança
   const [filterPaymentState, setFilterPaymentState] = useState<'pendentes' | 'pagamentos' | 'sem_pagamentos'>('pendentes');
   const [filterFrequency, setFilterFrequency] = useState<'diario' | 'semanal' | 'quinzenal' | 'mensal'>('diario');
+
+  // Modais de Novidades Solicitadas pelo Cliente (WhatsApp)
+  const [isPaymentLinkModalOpen, setIsPaymentLinkModalOpen] = useState(false);
+  const [isMassDispatchModalOpen, setIsMassDispatchModalOpen] = useState(false);
+  const [isMultiCalcModalOpen, setIsMultiCalcOpen] = useState(false);
+  const [isApagarCaixaModalOpen, setIsApagarCaixaModalOpen] = useState(false);
+
+  // Extrato de Pagamento: Multa por Atraso
+  const [receiptApplyLateFee, setReceiptApplyLateFee] = useState(true);
+  const [receiptLateDays, setReceiptLateDays] = useState(5);
+  const [receiptLateFeePct, setReceiptLateFeePct] = useState(5);
+  const [receiptDailyInterest, setReceiptDailyInterest] = useState(2.50);
+
+  // Contagem Inteligente de Cédulas (Print 6 WhatsApp)
+  const [notes200, setNotes200] = useState(0);
+  const [notes100, setNotes100] = useState(0);
+  const [notes50, setNotes50] = useState(0);
+  const [notes20, setNotes20] = useState(0);
+  const [notes10, setNotes10] = useState(0);
+  const [notes5, setNotes5] = useState(0);
+  const [notes2, setNotes2] = useState(0);
+  const [coinsAmount, setCoinsAmount] = useState(0);
+  const [pixAmount, setPixAmount] = useState(0);
+
+  // Movimentos Locais com Suporte a Exclusão e Estorno
+  const [simulatedMovements, setSimulatedMovements] = useState<CashMovement[]>([
+    {
+      id: 'mov-1',
+      type: 'Gasto',
+      category: 'Gastos: Combustible',
+      description: 'Abastecimento Moto Rota 15',
+      value: 45.0,
+      date: '2026-10-20',
+      unitId: 'ugi-15',
+      unitName: '15 - UGI Guarulhos',
+      workerName: 'Carlos Oliveira',
+      comments: 'Posto Shell Rota',
+      paymentMethod: 'Efectivo',
+      approved: true,
+    },
+    {
+      id: 'mov-2',
+      type: 'Retiro',
+      category: 'Retiros: Retiro de Caja',
+      description: 'Sangria de Segurança em Rota',
+      value: 500.0,
+      date: '2026-10-20',
+      unitId: 'ugi-15',
+      unitName: '15 - UGI Guarulhos',
+      workerName: 'Carlos Oliveira',
+      comments: 'Depositado cofre filial',
+      paymentMethod: 'Efectivo',
+      approved: true,
+    },
+  ]);
 
   // Tela de Movimentos
   const [movTab, setMovTab] = useState<'registrar' | 'movimentos'>('registrar');
@@ -527,6 +593,40 @@ export const TryMobileAppSimulator: React.FC<TryMobileAppSimulatorProps> = ({
               title="Filtros"
             >
               <Sliders className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* Barra de Ações Rápidas Conforme Imagem do WhatsApp: [Disparo em Massa] [Calculadora %] [Tirar / Sangria] */}
+          <div className="px-2.5 py-1.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between gap-1.5 shrink-0 text-[10px] font-black">
+            <button
+              onClick={() => setIsMassDispatchModalOpen(true)}
+              className="flex-1 py-1.5 px-1.5 rounded-lg bg-[#25D366] hover:bg-[#20ba59] text-white flex items-center justify-center space-x-1 shadow-2xs transition active:scale-95 cursor-pointer"
+              title="Disparo em massa de cobrança via WhatsApp"
+            >
+              <Zap className="w-3 h-3 text-white fill-current" />
+              <span>Disparo em Massa</span>
+            </button>
+
+            <button
+              onClick={() => setIsMultiCalcOpen(true)}
+              className="flex-1 py-1.5 px-1.5 rounded-lg bg-[#50007d] hover:bg-[#400066] text-white flex items-center justify-center space-x-1 shadow-2xs transition active:scale-95 cursor-pointer"
+              title="Calculadora Multi-Funções % Mais Controle"
+            >
+              <Percent className="w-3 h-3 text-[#8cc63f]" />
+              <span>Calculadora %</span>
+            </button>
+
+            <button
+              onClick={() => {
+                setMovTypeSegment('Retirada');
+                setMovDescOption('Retiros: Retiro de Caja');
+                setCurrentScreen('movimentos');
+              }}
+              className="flex-1 py-1.5 px-1.5 rounded-lg bg-white border border-slate-300 text-slate-800 hover:bg-slate-100 flex items-center justify-center space-x-1 shadow-2xs transition active:scale-95 cursor-pointer"
+              title="Lançar Sangria / Retirada de Caixa"
+            >
+              <DollarSign className="w-3 h-3 text-rose-600" />
+              <span>Tirar / Sangria</span>
             </button>
           </div>
 
@@ -1106,6 +1206,140 @@ export const TryMobileAppSimulator: React.FC<TryMobileAppSimulatorProps> = ({
             </div>
           </div>
 
+          {/* =========================================================================
+              CÁLCULO AUTOMÁTICO DO RESUMO NO FECHAMENTO MOBILE
+              Coleção (Recaudo $) - Vendas Totais ($) - Gastos ($) = Resultado ($)
+              ========================================================================= */}
+          <div className="bg-gradient-to-r from-purple-950 to-slate-900 rounded-2xl p-3 text-white border border-[#8cc63f]/60 space-y-1.5 shadow-md">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-black uppercase text-[#8cc63f] flex items-center gap-1">
+                <Calculator className="w-3 h-3" />
+                Cálculo Automático do Resumo
+              </span>
+              <span className="text-[9px] font-mono bg-[#8cc63f] text-slate-950 font-bold px-1.5 py-0.5 rounded">
+                AO VIVO
+              </span>
+            </div>
+            <div className="grid grid-cols-3 gap-1.5 text-center font-mono text-[10px] pt-1">
+              <div className="bg-purple-900/40 p-1 rounded border border-purple-700/50">
+                <span className="text-[8px] text-purple-300 block">Coleção</span>
+                <span className="font-bold text-emerald-400">+$0</span>
+              </div>
+              <div className="bg-purple-900/40 p-1 rounded border border-purple-700/50">
+                <span className="text-[8px] text-purple-300 block">Vendas</span>
+                <span className="font-bold text-amber-400">-$5.800</span>
+              </div>
+              <div className="bg-purple-900/40 p-1 rounded border border-purple-700/50">
+                <span className="text-[8px] text-purple-300 block">Gastos</span>
+                <span className="font-bold text-rose-400">-$1.000</span>
+              </div>
+            </div>
+            <div className="pt-1 border-t border-purple-800/80 flex items-center justify-between text-xs">
+              <span className="text-[10px] text-purple-200">Resultado Líquido:</span>
+              <span className="font-mono font-black text-rose-400">-$6.800</span>
+            </div>
+          </div>
+
+          {/* =========================================================================
+              CONTAGEM INTELIGENTE DE CÉDULAS (CONFORME PRINT 6 DO WHATSAPP)
+              ========================================================================= */}
+          <div className="bg-white rounded-2xl p-3.5 border border-slate-200 shadow-2xs space-y-3">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+              <div className="flex items-center space-x-1.5">
+                <Banknote className="w-4 h-4 text-[#50007d]" />
+                <h5 className="font-black text-xs text-slate-900">Contagem Inteligente de Cédulas</h5>
+              </div>
+              <span className="text-[10px] text-slate-400 font-bold">Espécie / Notas</span>
+            </div>
+
+            {/* Linhas de Cédulas com Botões - e + */}
+            <div className="space-y-1.5 text-xs">
+              {[
+                { label: 'R$ 200', count: notes200, set: setNotes200, val: 200 },
+                { label: 'R$ 100', count: notes100, set: setNotes100, val: 100 },
+                { label: 'R$ 50', count: notes50, set: setNotes50, val: 50 },
+                { label: 'R$ 20', count: notes20, set: setNotes20, val: 20 },
+                { label: 'R$ 10', count: notes10, set: setNotes10, val: 10 },
+                { label: 'R$ 5', count: notes5, set: setNotes5, val: 5 },
+                { label: 'R$ 2', count: notes2, set: setNotes2, val: 2 },
+              ].map((item) => (
+                <div key={item.label} className="flex items-center justify-between py-1 px-2 rounded-lg bg-slate-50 border border-slate-200/70">
+                  <div className="flex items-center space-x-2">
+                    <span className="font-black text-slate-800 font-mono w-14">{item.label}</span>
+                    <span className="text-[10px] text-slate-400 font-mono">
+                      = R$ {(item.count * item.val).toFixed(2)}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    <button
+                      type="button"
+                      onClick={() => item.set(Math.max(0, item.count - 1))}
+                      className="w-6 h-6 rounded-md bg-[#50007d] text-white flex items-center justify-center font-bold text-xs hover:bg-[#400066] active:scale-90"
+                    >
+                      -
+                    </button>
+                    <span className="w-6 text-center font-bold font-mono text-slate-900">
+                      {item.count}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => item.set(item.count + 1)}
+                      className="w-6 h-6 rounded-md bg-[#50007d] text-white flex items-center justify-center font-bold text-xs hover:bg-[#400066] active:scale-90"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+              ))}
+
+              {/* Moedas e PIX */}
+              <div className="grid grid-cols-2 gap-2 pt-1">
+                <div className="p-2 rounded-lg bg-slate-50 border border-slate-200">
+                  <span className="text-[10px] font-bold text-slate-600 block mb-0.5">🪙 Moedas (R$)</span>
+                  <input
+                    type="number"
+                    step="0.5"
+                    value={coinsAmount || ''}
+                    onChange={(e) => setCoinsAmount(parseFloat(e.target.value) || 0)}
+                    placeholder="0.00"
+                    className="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs font-mono font-bold"
+                  />
+                </div>
+
+                <div className="p-2 rounded-lg bg-slate-50 border border-slate-200">
+                  <span className="text-[10px] font-bold text-slate-600 block mb-0.5">⚡ PIX / Eletrônico (R$)</span>
+                  <input
+                    type="number"
+                    step="1"
+                    value={pixAmount || ''}
+                    onChange={(e) => setPixAmount(parseFloat(e.target.value) || 0)}
+                    placeholder="0.00"
+                    className="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs font-mono font-bold text-emerald-700"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Total Físico Apurado */}
+            <div className="pt-2 border-t border-slate-200 flex items-center justify-between">
+              <span className="font-bold text-slate-700 text-xs">Total Físico Apurado:</span>
+              <span className="text-base font-black font-mono text-[#50007d]">
+                R$ {(
+                  notes200 * 200 +
+                  notes100 * 100 +
+                  notes50 * 50 +
+                  notes20 * 20 +
+                  notes10 * 10 +
+                  notes5 * 5 +
+                  notes2 * 2 +
+                  coinsAmount +
+                  pixAmount
+                ).toFixed(2)}
+              </span>
+            </div>
+          </div>
+
           {/* Campo Valor e Botão Fechar Caixa */}
           <div className="space-y-2 pt-1">
             <input
@@ -1120,9 +1354,19 @@ export const TryMobileAppSimulator: React.FC<TryMobileAppSimulatorProps> = ({
                 alert('Caixa encerrado com sucesso! Dados sincronizados com o painel web.');
                 setCurrentScreen('route_list');
               }}
-              className="w-full py-3 rounded-xl bg-[#50007d] hover:bg-[#400066] text-white font-bold text-xs shadow-md transition active:scale-98"
+              className="w-full py-3 rounded-xl bg-[#50007d] hover:bg-[#400066] text-white font-bold text-xs shadow-md transition active:scale-98 cursor-pointer"
             >
               Fechar a caixa
+            </button>
+
+            {/* Ferramenta Facilitadora de Apagar Caixa Conforme Solicitado no WhatsApp */}
+            <button
+              type="button"
+              onClick={() => setIsApagarCaixaModalOpen(true)}
+              className="w-full py-2.5 rounded-xl border border-rose-300 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs flex items-center justify-center space-x-1.5 transition cursor-pointer"
+            >
+              <Trash2 className="w-3.5 h-3.5 text-rose-600" />
+              <span>Ferramenta de Apagar / Zerar Caixa</span>
             </button>
           </div>
         </div>
@@ -1384,16 +1628,80 @@ export const TryMobileAppSimulator: React.FC<TryMobileAppSimulatorProps> = ({
                     alert('Movimento enviado para análise e aprovação no painel Web!');
                     setCurrentScreen('route_list');
                   }}
-                  className="w-full py-2.5 rounded-xl border border-[#50007d] text-[#50007d] font-bold text-xs hover:bg-purple-50"
+                  className="w-full py-2.5 rounded-xl border border-[#50007d] text-[#50007d] font-bold text-xs hover:bg-purple-50 cursor-pointer"
                 >
                   Enviar para análisis
+                </button>
+
+                {/* Ferramenta para Apagar / Zerar Caixa solicitada no WhatsApp */}
+                <button
+                  type="button"
+                  onClick={() => setIsApagarCaixaModalOpen(true)}
+                  className="w-full py-2.5 rounded-xl border border-rose-300 bg-rose-50 text-rose-700 font-bold text-xs hover:bg-rose-100 flex items-center justify-center space-x-1.5 transition cursor-pointer"
+                >
+                  <Trash2 className="w-3.5 h-3.5 text-rose-600" />
+                  <span>Ferramenta de Apagar Caixa / Estornos</span>
                 </button>
               </div>
             </>
           ) : (
-            <div className="p-4 text-center text-slate-400 space-y-2">
-              <Clock className="w-8 h-8 mx-auto text-slate-300" />
-              <p className="font-medium">Nenhum movimento registrado na sessão atual.</p>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-slate-700 text-xs">Movimentos Lançados Hoje:</span>
+                <button
+                  onClick={() => setIsApagarCaixaModalOpen(true)}
+                  className="text-rose-600 hover:text-rose-700 text-[11px] font-bold flex items-center space-x-1 cursor-pointer"
+                >
+                  <Trash2 className="w-3 h-3" />
+                  <span>Zerar Tudo</span>
+                </button>
+              </div>
+
+              {simulatedMovements.length === 0 ? (
+                <div className="p-4 text-center text-slate-400 space-y-2 bg-white rounded-xl border border-slate-200">
+                  <Clock className="w-8 h-8 mx-auto text-slate-300" />
+                  <p className="font-medium">Nenhum movimento registrado na sessão atual.</p>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {simulatedMovements.map((m) => (
+                    <div
+                      key={m.id}
+                      className="bg-white rounded-xl p-3 border border-slate-200 shadow-2xs flex items-center justify-between"
+                    >
+                      <div>
+                        <div className="flex items-center space-x-1.5">
+                          <span className={`text-[10px] font-black uppercase px-1.5 py-0.5 rounded ${
+                            m.type === 'Gasto' ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800'
+                          }`}>
+                            {m.type}
+                          </span>
+                          <span className="font-bold text-xs text-slate-900">{m.category}</span>
+                        </div>
+                        <p className="text-[10px] text-slate-500 mt-0.5">{m.description}</p>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <span className="font-black font-mono text-xs text-rose-600">
+                          - R$ {m.value.toFixed(2)}
+                        </span>
+                        <button
+                          onClick={() => {
+                            if (confirm(`Deseja apagar o lançamento "${m.category}" de R$ ${m.value.toFixed(2)}?`)) {
+                              setSimulatedMovements((prev) => prev.filter((item) => item.id !== m.id));
+                              alert('Lançamento apagado com sucesso do caixa!');
+                            }
+                          }}
+                          className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition cursor-pointer"
+                          title="Apagar este movimento"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -2278,12 +2586,64 @@ export const TryMobileAppSimulator: React.FC<TryMobileAppSimulatorProps> = ({
               <div className="text-[9px] text-slate-400">UGI: 15 • Caixa (1002325)</div>
             </div>
 
-            <div className="space-y-1 text-slate-700">
-              <div>Cliente: <b>{selectedContract.clientName || 'Anielo Corvino'}</b></div>
-              <div>ID Venda: <b>#{selectedContract.saleId || '1003161'}</b></div>
-              <div>Data: <b>08/10/2026 23:01</b></div>
-              <div>Valor Pago: <b className="text-emerald-700 font-bold">$120,00</b></div>
-              <div>Saldo Devedor: <b className="text-rose-600 font-bold">$1.080,00</b></div>
+            <div className="space-y-1.5 text-slate-700">
+              <div className="flex justify-between">
+                <span>Cliente:</span>
+                <b>{selectedContract.clientName || 'Anielo Gomes Corvino'}</b>
+              </div>
+              <div className="flex justify-between">
+                <span>ID Venda:</span>
+                <b>#{selectedContract.saleId || '1003161'}</b>
+              </div>
+              <div className="flex justify-between">
+                <span>Data:</span>
+                <b>08/10/2026 23:01</b>
+              </div>
+              <div className="flex justify-between border-t border-slate-200/70 pt-1">
+                <span>Valor Pago:</span>
+                <b className="text-emerald-700 font-bold">$120,00</b>
+              </div>
+
+              {/* Saldo Devedor com Acréscimo de Multa por Atraso (Print 3 WhatsApp) */}
+              <div className="bg-slate-50 p-2 rounded-lg border border-slate-200 space-y-1">
+                <div className="flex justify-between text-slate-500 text-[10px]">
+                  <span>Saldo Devedor Base:</span>
+                  <span>$1.080,00</span>
+                </div>
+
+                {receiptApplyLateFee && (
+                  <>
+                    <div className="flex justify-between text-rose-600 text-[10px]">
+                      <span>+ Multa por Atraso ({receiptLateFeePct}%):</span>
+                      <span className="font-bold">+$54,00</span>
+                    </div>
+                    <div className="flex justify-between text-rose-600 text-[10px]">
+                      <span>+ Juros Moratórios ({receiptLateDays} dias):</span>
+                      <span className="font-bold">+$12,50</span>
+                    </div>
+                  </>
+                )}
+
+                <div className="flex justify-between text-rose-700 font-black text-xs pt-1 border-t border-slate-200">
+                  <span>Saldo Devedor Atualizado:</span>
+                  <span className="font-mono">
+                    {receiptApplyLateFee ? '$1.146,50' : '$1.080,00'}
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between pt-1 border-t border-slate-200 text-[9px] font-sans">
+                  <label className="flex items-center space-x-1 cursor-pointer select-none text-slate-600 font-bold">
+                    <input
+                      type="checkbox"
+                      checked={receiptApplyLateFee}
+                      onChange={(e) => setReceiptApplyLateFee(e.target.checked)}
+                      className="w-3 h-3 text-[#50007d] rounded"
+                    />
+                    <span>Acrescentar multa por atraso</span>
+                  </label>
+                  <span className="text-slate-400 font-mono">{receiptLateDays} dias venc.</span>
+                </div>
+              </div>
             </div>
 
             <div className="p-2 bg-slate-100 rounded text-center text-[9px] font-sans text-slate-600">
@@ -2291,18 +2651,27 @@ export const TryMobileAppSimulator: React.FC<TryMobileAppSimulatorProps> = ({
             </div>
           </div>
 
+          {/* Botão Oficial: Gerar Link de Pagamento (Item 1 Solicitado pelo Cliente) */}
+          <button
+            onClick={() => setIsPaymentLinkModalOpen(true)}
+            className="w-full py-2.5 rounded-xl bg-gradient-to-r from-[#50007d] to-[#3a005c] hover:from-[#400066] hover:to-[#2e004a] text-white font-black text-xs flex items-center justify-center space-x-1.5 shadow-md cursor-pointer transition active:scale-98"
+          >
+            <Link2 className="w-4 h-4 text-[#8cc63f]" />
+            <span>Gerar Link de Pagamento c/ PIX</span>
+          </button>
+
           <div className="grid grid-cols-2 gap-2">
             <button
-              onClick={() => alert('PDF do comprovante baixado')}
-              className="py-2.5 rounded-xl bg-slate-800 text-white font-bold text-xs flex items-center justify-center space-x-1"
+              onClick={() => alert('PDF do comprovante baixado com sucesso!')}
+              className="py-2.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs flex items-center justify-center space-x-1 cursor-pointer shadow-xs"
             >
               <Download className="w-3.5 h-3.5" />
               <span>ENVIAR PDF</span>
             </button>
 
             <button
-              onClick={() => alert('Comprovante enviado para o WhatsApp do cliente!')}
-              className="py-2.5 rounded-xl bg-[#25D366] text-white font-bold text-xs flex items-center justify-center space-x-1"
+              onClick={() => alert('Comprovante com saldo e multa enviado para o WhatsApp do cliente!')}
+              className="py-2.5 rounded-xl bg-[#25D366] hover:bg-[#20ba59] text-white font-bold text-xs flex items-center justify-center space-x-1 cursor-pointer shadow-xs"
             >
               <Share2 className="w-3.5 h-3.5" />
               <span>WhatsApp</span>
@@ -2311,7 +2680,7 @@ export const TryMobileAppSimulator: React.FC<TryMobileAppSimulatorProps> = ({
 
           <button
             onClick={() => setCurrentScreen('route_list')}
-            className="w-full py-2.5 rounded-xl border border-slate-300 font-bold text-slate-700 text-xs hover:bg-slate-100"
+            className="w-full py-2.5 rounded-xl border border-slate-300 font-bold text-slate-700 text-xs hover:bg-slate-100 cursor-pointer"
           >
             Voltar para Rota
           </button>
@@ -2801,6 +3170,45 @@ export const TryMobileAppSimulator: React.FC<TryMobileAppSimulatorProps> = ({
           {renderAppContent()}
         </div>
       )}
+
+      {/* Renderização dos Modais das Novidades do WhatsApp */}
+      <PaymentLinkModal
+        isOpen={isPaymentLinkModalOpen}
+        onClose={() => setIsPaymentLinkModalOpen(false)}
+        clientName={selectedContract.clientName || 'Anielo Gomes Corvino'}
+        clientPhone={selectedContract.clientPhone || '+55 11 98451-2290'}
+        contractId={selectedContract.saleId || '1003161'}
+        defaultAmount={120}
+      />
+
+      <DisparoEmMassaModal
+        isOpen={isMassDispatchModalOpen}
+        onClose={() => setIsMassDispatchModalOpen(false)}
+        totalClientsCount={contracts.length || 48}
+      />
+
+      <CalculadoraMultiFuncaoModal
+        isOpen={isMultiCalcModalOpen}
+        onClose={() => setIsMultiCalcOpen(false)}
+        initialTab="juros"
+        onApplyCalculatedValues={(v) => {
+          if (v.valorParcela) {
+            setAdditionalAmount(v.valorParcela.toFixed(2));
+          }
+        }}
+      />
+
+      <ApagarCaixaModal
+        isOpen={isApagarCaixaModalOpen}
+        onClose={() => setIsApagarCaixaModalOpen(false)}
+        movements={simulatedMovements}
+        onDeleteMovement={(id) => {
+          setSimulatedMovements((prev) => prev.filter((m) => m.id !== id));
+        }}
+        onResetCaixa={() => {
+          setSimulatedMovements([]);
+        }}
+      />
     </div>
   );
 };

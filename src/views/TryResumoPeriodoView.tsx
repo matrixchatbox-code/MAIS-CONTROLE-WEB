@@ -814,6 +814,26 @@ export const TryResumoPeriodoView: React.FC<TryResumoPeriodoViewProps> = ({
         </h2>
       </div>
 
+      {/* Fórmula Automática do Resumo Conforme Solicitado no WhatsApp */}
+      <div className="bg-gradient-to-r from-slate-900 via-purple-950 to-slate-900 border border-[#8cc63f]/60 rounded-xl p-3 text-white shadow-md flex flex-col md:flex-row items-start md:items-center justify-between gap-2 text-xs">
+        <div className="flex items-center space-x-2">
+          <span className="w-6 h-6 rounded-lg bg-[#8cc63f] text-slate-950 flex items-center justify-center font-black text-xs">
+            =
+          </span>
+          <div>
+            <span className="font-bold text-[11px] text-purple-200 block">
+              Cálculo Automático do Resumo Consolidado:
+            </span>
+            <span className="font-mono text-xs text-[#8cc63f] font-bold">
+              Coleção (75.598) — Vendas Totais (61.170) — Gastos/Despesas (10.056) = Geração Líquida (+4.372)
+            </span>
+          </div>
+        </div>
+        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-[#8cc63f] text-slate-950 uppercase shrink-0">
+          Cálculo Automático Ativo
+        </span>
+      </div>
+
       {/* =========================================================================
           1. CARTÃO CONSOLIDADO: TOTAL UNIDADE(S) (Conforme Imagem do Cliente)
           ========================================================================= */}

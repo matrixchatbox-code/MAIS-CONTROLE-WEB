@@ -3047,129 +3047,57 @@ export const TryMobileAppSimulator: React.FC<TryMobileAppSimulatorProps> = ({
   );
 
   return (
-    <div className="w-full flex flex-col items-center justify-center p-2 sm:p-4">
-      
-      {/* Barra Superior de Controle para Testes do Cliente */}
-      <div className="w-full max-w-4xl bg-white border border-slate-200 rounded-2xl p-3.5 shadow-sm mb-4 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center space-x-3">
-          <BrandLogo variant="maiscontrole" size="sm" />
-          <div className="border-l pl-3 border-slate-200 hidden sm:block">
-            <span className="text-xs font-bold text-[#50007d] block leading-tight">
-              Ambiente de Avaliação & Testes do Cliente
-            </span>
-            <span className="text-[10px] text-slate-500">
-              App Mobile do Trabalhador • Português (Brasil)
-            </span>
-          </div>
-        </div>
+    <div className="w-full min-h-screen bg-slate-950 flex flex-col items-center justify-center p-0 sm:p-4 selection:bg-[#76b82a] selection:text-white relative">
+      {/* Botões Discretos Externos para o Administrador (Apenas Desktop) */}
+      <div className="hidden sm:flex fixed top-3 right-4 z-50 items-center space-x-2 bg-slate-900/90 backdrop-blur-md text-white p-1.5 px-3 rounded-full border border-slate-700 shadow-xl text-xs">
+        <a
+          href="/mais-controle-trabalhador.apk"
+          download="mais-controle-trabalhador.apk"
+          className="flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#8cc63f] hover:bg-[#7cb342] text-slate-950 font-black text-xs transition cursor-pointer shadow-xs"
+          title="Baixar arquivo APK Universal Oficial (60 MB) para instalar direto no Android"
+        >
+          <Download className="w-3.5 h-3.5" />
+          <span>Baixar APK (60 MB)</span>
+        </a>
 
-        <div className="flex items-center flex-wrap gap-2 text-xs">
-          {/* Alternar Modo Moldura / Tela Cheia */}
-          <div className="bg-slate-100 p-1 rounded-xl flex items-center space-x-1">
-            <button
-              onClick={() => setDisplayMode('smartphone')}
-              className={`px-2.5 py-1 rounded-lg font-bold text-[11px] flex items-center space-x-1 transition ${
-                displayMode === 'smartphone'
-                  ? 'bg-white text-[#50007d] shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              <Smartphone className="w-3.5 h-3.5" />
-              <span>Moldura</span>
-            </button>
-            <button
-              onClick={() => setDisplayMode('fullscreen')}
-              className={`px-2.5 py-1 rounded-lg font-bold text-[11px] flex items-center space-x-1 transition ${
-                displayMode === 'fullscreen'
-                  ? 'bg-white text-[#50007d] shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              <Maximize2 className="w-3.5 h-3.5" />
-              <span>Tela Cheia</span>
-            </button>
-          </div>
+        <button
+          onClick={handleCopyClientLink}
+          className="flex items-center space-x-1 px-2.5 py-1 rounded-full bg-white/10 hover:bg-white/20 text-white font-bold text-[11px] transition cursor-pointer"
+          title="Copiar Link de Acesso do Trabalhador"
+        >
+          {linkCopied ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3 text-purple-200" />}
+          <span>{linkCopied ? 'Copiado!' : 'Copiar Link'}</span>
+        </button>
 
-          {/* Copiar Link Direto do App para Enviar ao Cliente */}
+        {onBackToWeb && (
           <button
-            onClick={handleCopyClientLink}
-            className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-bold text-[11px] flex items-center space-x-1.5 transition active:scale-95 shadow-xs"
-            title="Copiar Link para Teste do Cliente"
+            onClick={onBackToWeb}
+            className="flex items-center space-x-1 px-2.5 py-1 rounded-full bg-purple-900/70 hover:bg-purple-800 text-purple-200 hover:text-white font-bold text-[11px] transition cursor-pointer border border-purple-500/50"
+            title="Voltar para o Painel Web do Administrador"
           >
-            {linkCopied ? (
-              <>
-                <Check className="w-3.5 h-3.5 text-emerald-400" />
-                <span className="text-emerald-400 font-bold">Link Copiado!</span>
-              </>
-            ) : (
-              <>
-                <Copy className="w-3.5 h-3.5" />
-                <span>Copiar Link p/ Cliente</span>
-              </>
-            )}
+            <span>Painel Web</span>
           </button>
-
-          {/* Voltar ao Painel Web */}
-          {onBackToWeb && (
-            <button
-              onClick={onBackToWeb}
-              className="px-3 py-1.5 rounded-xl border border-[#50007d] text-[#50007d] hover:bg-purple-50 font-bold text-[11px] transition"
-            >
-              Ir para Painel Web
-            </button>
-          )}
-        </div>
+        )}
       </div>
 
-      {/* Atalhos Rápidos para Navegação pelas 15+ Telas */}
-      <div className="w-full max-w-4xl bg-purple-50/70 border border-purple-200/80 rounded-xl p-2.5 mb-4 flex items-center gap-1.5 overflow-x-auto custom-scrollbar text-xs">
-        <span className="font-bold text-[#50007d] text-[11px] shrink-0 mr-1 flex items-center gap-1">
-          <span>Telas:</span>
-        </span>
-        {[
-          { id: 'login', label: 'Login' },
-          { id: 'route_list', label: 'Rota / Vendas' },
-          { id: 'cliente_novo', label: 'Cliente Novo (CPF Obrigatório)' },
-          { id: 'clientes_cadastrados', label: 'Clientes Cadastrados' },
-          { id: 'movimentos', label: 'Despesas / Rendas' },
-          { id: 'cierre_caja', label: 'Fechamento de Caixa' },
-          { id: 'perfil_trabalhador', label: 'Perfil Trabalhador' },
-          { id: 'pre_vendas', label: 'Pre Vendas' },
-          { id: 'seguros', label: 'Seguros' },
-          { id: 'configuracao', label: 'Configurações' },
-        ].map((screen) => (
-          <button
-            key={screen.id}
-            onClick={() => setCurrentScreen(screen.id as MobileScreen)}
-            className={`px-2.5 py-1 rounded-lg font-bold text-[11px] shrink-0 transition ${
-              currentScreen === screen.id
-                ? 'bg-[#50007d] text-white shadow-xs'
-                : 'bg-white text-slate-700 border border-slate-200 hover:bg-purple-100/50'
-            }`}
-          >
-            {screen.label}
-          </button>
-        ))}
+      {/* RENDERIZAÇÃO 100% LIMPA DO APP MOBILE DO TRABALHADOR */}
+      {/* Em smartphones/celular real (telas < sm): ocupa 100% da tela nativa sem moldura */}
+      <div className="w-full h-[100dvh] sm:hidden flex flex-col bg-white overflow-hidden">
+        {renderAppContent()}
       </div>
 
-      {/* Renderização Condicional: Smartphone Frame vs. Fullscreen */}
-      {displayMode === 'smartphone' ? (
-        <div className="relative w-[370px] h-[785px] bg-slate-950 rounded-[50px] p-3 shadow-2xl border-4 border-slate-800 ring-2 ring-slate-900 flex flex-col overflow-hidden">
-          {/* Alto-falante e Câmera Frontal */}
-          <div className="absolute top-4 left-1/2 -translate-x-1/2 w-32 h-4.5 bg-black rounded-full z-40 flex items-center justify-center">
-            <div className="w-12 h-1 bg-slate-800 rounded-full"></div>
-            <div className="w-2.5 h-2.5 rounded-full bg-slate-900 ml-2.5 border border-slate-800"></div>
-          </div>
-
-          <div className="flex-1 rounded-[38px] overflow-hidden flex flex-col">
-            {renderAppContent()}
-          </div>
+      {/* Em telas de computadores/desktops: moldura moderna e fidedigna de celular */}
+      <div className="hidden sm:flex relative w-[375px] h-[812px] bg-slate-950 rounded-[50px] p-3 shadow-2xl border-4 border-slate-800 ring-2 ring-slate-900 flex-col overflow-hidden">
+        {/* Alto-falante e Câmera Frontal */}
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 w-32 h-4.5 bg-black rounded-full z-40 flex items-center justify-center">
+          <div className="w-12 h-1 bg-slate-800 rounded-full"></div>
+          <div className="w-2.5 h-2.5 rounded-full bg-slate-900 ml-2.5 border border-slate-800"></div>
         </div>
-      ) : (
-        <div className="w-full max-w-md h-[780px] bg-white rounded-2xl shadow-xl border border-slate-300 flex flex-col overflow-hidden">
+
+        <div className="flex-1 rounded-[38px] overflow-hidden flex flex-col bg-white">
           {renderAppContent()}
         </div>
-      )}
+      </div>
 
       {/* Renderização dos Modais das Novidades do WhatsApp */}
       <PaymentLinkModal

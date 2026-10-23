@@ -20,7 +20,8 @@ import {
   Sliders,
   CheckCircle2,
   ShieldAlert,
-  Bell
+  Bell,
+  Download,
 } from 'lucide-react';
 import { MainNavTab, SubViewSection, Language, ViewMode } from '../types';
 import { BrandLogo } from './BrandLogo';
@@ -604,6 +605,17 @@ export const TryTopNavigation: React.FC<TryTopNavigationProps> = ({
             <Smartphone className="w-3.5 h-3.5 text-[#8cc63f]" />
             <span>{viewMode === 'mobile_app' ? (isPt ? 'Painel Web' : 'Panel Web') : 'App'}</span>
           </button>
+
+          {/* Direct APK Download Button (60 MB) */}
+          <a
+            href="/mais-controle-trabalhador.apk"
+            download="mais-controle-trabalhador.apk"
+            className="hidden lg:flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold transition shadow-xs bg-[#76b82a] hover:bg-[#6aa822] text-white cursor-pointer"
+            title={isPt ? "Baixar arquivo APK Android do Trabalhador (60 MB)" : "Descargar APK Android (60 MB)"}
+          >
+            <Download className="w-3.5 h-3.5" />
+            <span>APK (60 MB)</span>
+          </a>
 
           {/* User Profile Avatar Circle with initials EV matching screenshot */}
           <div className="relative">

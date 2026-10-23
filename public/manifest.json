@@ -1,0 +1,33 @@
+{
+  "id": "/#/app",
+  "name": "MAIS CONTROLE | App do Trabalhador",
+  "short_name": "MaisControle",
+  "description": "Aplicativo Mobile Oficial Mais Controle para Cobradores e Trabalhadores de Rota.",
+  "start_url": "/#/app",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#50007d",
+  "background_color": "#50007d",
+  "categories": ["business", "finance", "productivity"],
+  "icons": [
+    {
+      "src": "/pwa-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-maskable-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

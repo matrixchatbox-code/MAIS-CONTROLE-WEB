@@ -20,6 +20,7 @@ import { TryFilterBar } from './components/TryFilterBar';
 import { FloatingWhatsApp } from './components/FloatingWhatsApp';
 import { CierreMasivoModal } from './components/modals/CierreMasivoModal';
 import { NovaVendaModal } from './components/modals/NovaVendaModal';
+import { BaixarApkModal } from './components/modals/BaixarApkModal';
 
 import { TryInicioView } from './views/TryInicioView';
 import { TryEstadisticasView } from './views/TryEstadisticasView';
@@ -31,7 +32,7 @@ import { TryNovedadesView } from './views/TryNovedadesView';
 import { TryPerfilView } from './views/TryPerfilView';
 import { TryMobileAppSimulator } from './views/TryMobileAppSimulator';
 import { ViewMode } from './types';
-import { Smartphone } from 'lucide-react';
+import { Smartphone, Download } from 'lucide-react';
 
 export default function App() {
   // Language State
@@ -77,6 +78,7 @@ export default function App() {
   // Modals
   const [isCierreMasivoOpen, setIsCierreMasivoOpen] = useState(false);
   const [isNovaVendaOpen, setIsNovaVendaOpen] = useState(false);
+  const [isBaixarApkOpen, setIsBaixarApkOpen] = useState(false);
 
   // Helper to sync Language
   const setLanguage = (lang: Language) => {
@@ -404,18 +406,28 @@ export default function App() {
       {/* Floating WhatsApp Bubble */}
       <FloatingWhatsApp />
 
-      {/* Floating Shortcut to Open Mobile App Simulator */}
-      <div className="fixed bottom-6 right-20 z-40">
+      {/* Floating Shortcuts for Mobile App & APK Download */}
+      <div className="fixed bottom-6 right-20 z-40 flex items-center space-x-2">
+        <button
+          onClick={() => setIsBaixarApkOpen(true)}
+          className="flex items-center space-x-1.5 bg-[#76b82a] hover:bg-[#6aa822] text-white px-3.5 py-2.5 rounded-full shadow-2xl border-2 border-white font-black text-xs transition transform hover:scale-105 active:scale-95 cursor-pointer"
+          title="Baixar arquivo APK Android (26 MB) ou enviar ao trabalhador"
+        >
+          <Download className="w-4 h-4" />
+          <span className="hidden sm:inline">Baixar APK (60 MB)</span>
+          <span className="sm:hidden">APK</span>
+        </button>
+
         <button
           onClick={() => handleChangeViewMode('mobile_app')}
-          className="flex items-center space-x-2 bg-[#50007d] hover:bg-[#3b005c] text-white px-4 py-2.5 rounded-full shadow-2xl border-2 border-[#8cc63f] font-bold text-xs transition transform hover:scale-105 active:scale-95"
-          title="Abrir e Testar App Mobile Mais Controle"
+          className="flex items-center space-x-2 bg-[#50007d] hover:bg-[#3b005c] text-white px-4 py-2.5 rounded-full shadow-2xl border-2 border-[#8cc63f] font-bold text-xs transition transform hover:scale-105 active:scale-95 cursor-pointer"
+          title="Abrir App Mobile do Trabalhador Mais Controle"
         >
           <Smartphone className="w-4 h-4 text-[#8cc63f]" />
-          <span className="hidden sm:inline">Testar App Mobile</span>
+          <span className="hidden sm:inline">App Trabalhador</span>
           <span className="sm:hidden">App</span>
           <span className="bg-[#8cc63f] text-slate-950 text-[10px] px-1.5 py-0.5 rounded-full font-black">
-            CLIENTE
+            OFICIAL
           </span>
         </button>
       </div>
@@ -434,6 +446,12 @@ export default function App() {
         clients={clients}
         onAddSale={handleAddSale}
         language={language}
+      />
+
+      {/* Modal: Baixar & Enviar APK do Trabalhador */}
+      <BaixarApkModal
+        isOpen={isBaixarApkOpen}
+        onClose={() => setIsBaixarApkOpen(false)}
       />
     </div>
   );
